@@ -45,11 +45,13 @@ export const signUpController = async (req, res) => {
     }
 
     const verificationUrl = `${process.env.URL}/verify-email?token=${verificationToken}`;
-    generateToken(newUser._id);
+   const token = generateToken(newUser._id);
+   console.log(token);
     await sendVerificationMail(newUser.email, verificationUrl);
     return res.status(201).json({
       message: "User created successully!",
       user: {
+        token,
         ...newUser._doc,
         password: undefined,
         verificationToken: undefined,
