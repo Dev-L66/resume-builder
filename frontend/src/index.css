@@ -1,9 +1,26 @@
+@import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Tiny5&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Sedan:ital@0;1&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech&display=swap');
+
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --font-sedan: "Sedan", serif;
+  --font-cursive: "Dancing Script", cursive;
+  --font-tiny: "Tiny5", sans-serif;
+  --font-tech: "Share Tech", sans-serif;
+  --breakpoint-sm: 340px;
+  --breakpoint-md: 540px;
+  --breakpoint-lg: 786px;
+  --breakpoint-xl: 1180px;
+}
+
 @theme inline {
+   
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -51,7 +68,7 @@
   --popover-foreground: oklch(0.145 0 0);
   --primary: oklch(0.205 0 0);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
+  --secondary: oklch(54.651% 0.15301 23.632);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
@@ -74,6 +91,7 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  
 }
 
 .dark {
@@ -116,5 +134,7 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-tech);
+   
   }
 }

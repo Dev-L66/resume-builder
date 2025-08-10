@@ -1,10 +1,14 @@
-import Home from "./pages/Home";
+import { Routes, Route } from "react-router";
+import LandingPage from "./pages/LandingPage";
+import Layout from "./components/Layout";
 const App = () => {
   return (
-   <div className="mx-auto p-5 container flex justify-center items-center">
-  <Home />
-  </div>
-  )
+    <Routes>
+      <Route element={<Layout />}>
+        <Route path="/" element={<LandingPage />} />
+      </Route>
+    </Routes>
+  );
 };
 
 export default App;
