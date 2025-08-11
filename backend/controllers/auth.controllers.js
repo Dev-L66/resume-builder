@@ -22,7 +22,9 @@ import "dotenv/config";
 export const signUpController = async (req, res) => {
   try {
     const { name, email, password } = signUpValidationSchema.parse(req.body);
-
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "All fields are required!" });
+    }
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(409).json({ message: "Email already taken!" });
@@ -44,9 +46,9 @@ export const signUpController = async (req, res) => {
         .json({ message: `Error creating user: ${error.message}.` });
     }
 
-    const verificationUrl = `${process.env.URL}/verify-email?token=${verificationToken}`;
-   const token = generateToken(newUser._id);
-   console.log(token);
+    const verificationUrl = `${process.env.CLIENT_URL}/verify-email?token=${verificationToken}`;
+    const token = generateToken(newUser._id);
+    console.log(token);
     await sendVerificationMail(newUser.email, verificationUrl);
     return res.status(201).json({
       message: "User created successully!",
@@ -54,12 +56,17 @@ export const signUpController = async (req, res) => {
         token,
         ...newUser._doc,
         password: undefined,
-        verificationToken: undefined,
+        // verificationToken: undefined,
       },
     });
   } catch (error) {
     if (error instanceof ZodError) {
-      return res.status(400).json({ error: error.issues.map((issue) => issue.message) });
+      return res.status(400).json({
+        errors: error.issues.map((issue) => ({
+          path: issue.path[0],
+          message: issue.message,
+        })),
+      });
     }
     console.log(`Error in signUpController: ${error.message}.`);
     return res
@@ -88,14 +95,21 @@ export const verifyEmailController = async (req, res) => {
         .json({ message: "Invalid or expired token! Please try again!" });
     }
     if (user.isVerified) {
-      return res.status(400).json({ message: "Email already verified!" });
+      return res.status(400).json({
+        message: "Email already verified!",
+        user: {
+          ...user._doc,
+          password: undefined,
+        },
+      });
     }
     user.isVerified = true;
     user.verificationToken = undefined;
     user.verificationTokenExpiresAt = undefined;
     await user.save();
     await sendVerifiedMail(user.name, user.email);
-    return res.status(200).json({ message: "Email verified successfully!" });
+    const authToken = generateToken(user._id);
+    return res.status(200).json({ message: "Email verified successfully!" , user: {...user._doc, token: authToken}});
   } catch (error) {
     console.log(`Error in verifyEmailController: ${error.message}.`);
     return res

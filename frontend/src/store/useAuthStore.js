@@ -7,6 +7,9 @@ export const useAuthStore = create((set) => ({
   token: null,
   loading: false,
   error: null,
+  message: null,
+  verificationToken: null,
+  
 
   setUser: (user) => set({ user }),
   setToken: (token) => {
@@ -15,6 +18,8 @@ export const useAuthStore = create((set) => ({
   },
   setLoading: (loading) => set({ loading }),
   setError: (error) => set({ error }),
+  setMessage: (message) => set({ message }),
+  setVerificationToken: (verificationToken) => set({ verificationToken }),
 
   signup: async ({ name, email, password }) => {
     set({ loading: true, error: null });
@@ -26,37 +31,53 @@ export const useAuthStore = create((set) => ({
       });
       console.log("from zustand",res.data);
       set({
+        message:res.data.message || "Verification email sent",
         token: res.data.user.token,
         user: res.data.user,
         loading: false,
         error: null,
       });
       localStorage.setItem("token", res.data.user.token);
-    } catch (error) {
-      set({
-        error:
-          error.response?.data.message ||
-          error.response?.data.error ||
-          error.message ||
-          "Something went wrong.",
-        loading: false,
-      });
-    }
-  },
+      return true;
+    } catch (err) {
+   if (err.response?.data?.errors) {
+  const fieldErrors = {};
 
-  verifyEmail: async ({ emailToken }) => {
+  err.response.data.errors.forEach(e => {
+    if (!fieldErrors[e.path]) {
+      fieldErrors[e.path] = [];
+    }
+    fieldErrors[e.path].push(e.message);
+  });
+
+  set({ error: fieldErrors, loading: false });
+} else {
+  set({
+    error: { message: err.response?.data?.message|| err.response?.data?.error || err.message || "Something went wrong" },
+    loading: false,
+  });
+}
+return false;
+  }
+},
+
+  verifyEmail: async ({verificationToken }) => {
     set({ loading: true, error: null });
     try {
-      const res = await axiosInstance.post(API_PATHS.AUTH.VERIFY_EMAIL, {
-        emailToken,
+      const res = await axiosInstance.get(`${API_PATHS.AUTH.VERIFY_EMAIL}?token=${verificationToken}`, {
+        verificationToken,
       });
-      set({
+      console.log(res.data);
+      set({  
+        message: res.data.message || "Email verified successfully",
+        verificationToken: res.data.user.verificationToken,
         token: res.data.token,
         user: res.data.user,
         loading: false,
         error: null,
       });
       localStorage.setItem("token", res.data.token);
+      return true;
     } catch (error) {
       set({
         error:
@@ -67,6 +88,7 @@ export const useAuthStore = create((set) => ({
         loading: false,
       });
     }
+    return false;
   },
 
   checkAuth: async () => {

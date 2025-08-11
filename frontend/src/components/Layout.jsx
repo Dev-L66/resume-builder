@@ -5,9 +5,12 @@ import Footer from "./Footer"
 const Layout = () => {
   return (
     <>
+   
     <Navbar/>
-    <Outlet/>
-    <Footer/>
+    <Outlet/> 
+     <div className="flex flex-col"> 
+    <Footer />
+   </div>
     </>
   )
 }

@@ -1,38 +1,40 @@
-import { NavLink, Form } from "react-router";
+import { NavLink, Form, useNavigate } from "react-router";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
+import Loader from "../components/ui/Loader";
+import { toast } from "react-hot-toast";
+import { useEffect } from "react";
 
-const SignupPage = ({
-  heading = "Signup",
-  buttonText = "Create Account",
-  signupText = "Already a user? Login",
-}) => {
+const SignupPage = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
   });
+  const navigate = useNavigate();
 
-  const{signup,user,token} = useAuthStore();
+  const { signup, user, token, error, loading } = useAuthStore();
 
-
-  const handleFormSubmit = async(e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-   await signup(formData);
-    console.log(user, token);
-    setFormData({
-      name: "",
-      email: "",
-      password: "",
-    });
-  }
-  useEffect(() => {
-  if (token && user) {
-    console.log("Updated token and user:", token, user);
-  }
-}, [token, user]);
+    try {
+      const success = await signup(formData);
+      console.log(user, token);
+      if (success) {
+        setFormData({
+          name: "",
+          email: "",
+          password: "",
+        });
+        toast.success("Signup successful");
+        navigate("/verify-email/sent");
+      }
+    } catch (error) {
+      toast.error("Something went wrong", error);
+    }
+  };
 
   const handleChangeInput = (e) => {
     const { value, name } = e.target;
@@ -41,8 +43,13 @@ const SignupPage = ({
 
   return (
     <div className="flex flex-col gap-5 md:w-[50%] lg:w-[35%] w-full border border-gray-400 rounded-md p-5">
-      {heading && <h1 className="text-2xl font-bold text-center">{heading}</h1>}
-      <form onSubmit={handleFormSubmit} className="flex flex-col gap-5" method="post">
+      <h1 className="text-2xl font-bold text-center">Signup</h1>
+
+      <form
+        onSubmit={handleFormSubmit}
+        className="flex flex-col gap-5"
+        method="post"
+      >
         <Input
           type="name"
           placeholder="Name"
@@ -52,6 +59,9 @@ const SignupPage = ({
           onChange={handleChangeInput}
           name="name"
         />
+        {error?.name && (
+          <p className="text-red-500 text-xs font-sans">{error.name}</p>
+        )}
         <Input
           type="email"
           placeholder="Email"
@@ -61,6 +71,9 @@ const SignupPage = ({
           onChange={handleChangeInput}
           name="email"
         />
+        {error?.email && (
+          <p className="text-red-500 text-xs font-sans">{error.email}</p>
+        )}
         <Input
           type="password"
           placeholder="Password"
@@ -70,10 +83,19 @@ const SignupPage = ({
           onChange={handleChangeInput}
           name="password"
         />
-        <Button  className="w-full">
-          {buttonText}
+
+        {error?.password && (
+          <p className="text-red-500 text-xs font-sans">{error.password}</p>
+        )}
+        <Button disabled={loading} className="w-full">
+          {loading ? <Loader /> : "Signup"}
         </Button>
-        <NavLink to="/login">{signupText}</NavLink>
+        {error && (
+          <p className="text-red-500 text-xs font-sans">{error.message}</p>
+        )}
+        <NavLink to="/login" className="text-sm">
+          Already a user? Login
+        </NavLink>
       </form>
     </div>
   );

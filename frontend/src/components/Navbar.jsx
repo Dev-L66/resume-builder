@@ -15,7 +15,7 @@ import { NavLink } from "react-router";
 const navigationLinks = [
   {
     name: "Resume Builder",
-    link: "/",
+   
   },
 ];
 
@@ -65,7 +65,7 @@ const Navbar = () => {
           {navigationLinks.map((item) => (
             <NavigationMenuItem key={item.name}>
               <NavigationMenuLink asChild className="md:text-2xl text-xl ">
-                <NavLink to={item.link}>
+                <NavLink>
                   {item.name}
                 </NavLink>
               </NavigationMenuLink>
