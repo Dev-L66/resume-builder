@@ -2,7 +2,7 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <section className="w-full flex items-center justify-center text-sm p-1">
+    <section className="w-full flex items-center justify-center text-sm p-1 mt-10">
       <p className="">
         Made with ❤️ by Resume Builder.
       </p>

@@ -163,9 +163,19 @@ export const loginController = async (req, res) => {
         .status(400)
         .json({ message: "Please verify your email to login." });
     }
-    generateToken(user._id);
-    return res.status(200).json({ message: "Login successful!" });
+   const token = generateToken(user._id);
+    return res.status(200).json({ message: "Login successful!", user: {...user._doc, token}});
   } catch (error) {
+    {
+    if (error instanceof ZodError) {
+      return res.status(400).json({
+        errors: error.issues.map((issue) => ({
+          path: issue.path[0],
+          message: issue.message,
+        })),
+      });
+    }
+    }
     console.log(`Error in loginController: ${error.message}.`);
     return res.status(500).json({
       error: `Error in loginController: ${error.message}.`,

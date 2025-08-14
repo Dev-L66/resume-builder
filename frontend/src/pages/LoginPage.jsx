@@ -7,31 +7,30 @@ import Loader from "../components/ui/Loader";
 import { toast } from "react-hot-toast";
 
 
-const SignupPage = () => {
+const LoginPage = () => {
   const [formData, setFormData] = useState({
-    name: "",
     email: "",
     password: "",
   });
   const navigate = useNavigate();
 
-  const { signup, error, loading } = useAuthStore();
+  const { login, error, loading } = useAuthStore();
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     try {
-      const success = await signup(formData);
+      const success = await login(formData);
       if (success) {
         setFormData({
-          name: "",
           email: "",
           password: "",
         });
-        toast.success("Signup successful");
-        navigate("/verify-email/sent");
+        toast.success("Login successful");
+        navigate("/dashboard");
       }
     } catch (error) {
       toast.error("Something went wrong", error);
+      console.log(error);
     }
   };
 
@@ -42,25 +41,13 @@ const SignupPage = () => {
 
   return (
     <div className="flex flex-col gap-5 md:w-[50%] lg:w-[35%] w-full border border-gray-400 rounded-md p-5">
-      <h1 className="text-2xl font-bold text-center">Signup</h1>
+      <h1 className="text-2xl font-bold text-center">Login</h1>
 
       <form
         onSubmit={handleFormSubmit}
         className="flex flex-col gap-5"
         method="post"
       >
-        <Input
-          type="name"
-          placeholder="Name"
-          className="text-sm"
-          required
-          value={formData.name}
-          onChange={handleChangeInput}
-          name="name"
-        />
-        {error?.name && (
-          <p className="text-red-500 text-xs font-sans">{error.name}</p>
-        )}
         <Input
           type="email"
           placeholder="Email"
@@ -87,16 +74,16 @@ const SignupPage = () => {
           <p className="text-red-500 text-xs font-sans">{error.password}</p>
         )}
         <Button disabled={loading} className="w-full">
-          {loading ? <Loader /> : "Signup"}
+          {loading ? <Loader /> : "Login"}
         </Button>
         {error && (
           <p className="text-red-500 text-xs font-sans">{error.message}</p>
         )}
-        <NavLink to="/login" className="text-sm text-zinc-400 hover:underline">
-          Already a user? Login
+        <NavLink to="/signup" className="text-sm text-zinc-400 hover:underline">
+         Don't have an account? Signup
         </NavLink>
       </form>
     </div>
   );
 };
-export default SignupPage;
+export default LoginPage;

@@ -1,8 +1,12 @@
+import { useNavigate } from "react-router";
 import Loader from "../components/ui/Loader";
 import { useAuthStore } from "../store/useAuthStore";
+import { useEffect } from "react";
 
 const VerifyEmailSent = () => {
   const { user, message, loading, error } = useAuthStore();
+  const navigate = useNavigate();
+  console.log(user);
   if (loading) {
     return (
       <section className="flex flex-col justify-center items-center h-screen">
@@ -10,6 +14,7 @@ const VerifyEmailSent = () => {
       </section>
     );
   }
+ 
   return (
     <section className="flex flex-col justify-center items-center h-screen">
       {" "}
@@ -21,7 +26,7 @@ const VerifyEmailSent = () => {
       </p>
       <p className="md:text-2xl text-md p-2">
         Check your email to verify your account.
-        {error && <span className="text-red-500">{error}</span>}
+        {error && <span className="text-red-500">{error.message}</span>}
       </p>
     </section>
   );

@@ -4,6 +4,9 @@ import Layout from "./components/Layout";
 import SignupPage from "./pages/SignupPage";
 import VerifyEmailSent from "./pages/VerifyEmailSent";
 import VerifyEmail from "./pages/VerifyEmail";
+import Dashboard from "./pages/Dashboard";
+import LoginPage from "./pages/LoginPage";
+
 const App = () => {
   return (
     <Routes>
@@ -19,6 +22,10 @@ const App = () => {
         />
         <Route path="/verify-email/sent" element={<VerifyEmailSent />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path="/dashboard" element={<div><Dashboard/></div>} />
+        <Route path="/login" element={<div className="flex justify-center items-center h-screen">
+              <LoginPage />
+            </div>}/>
       </Route>
     </Routes>
   );

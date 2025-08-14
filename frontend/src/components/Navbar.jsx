@@ -57,7 +57,7 @@ const Navbar = () => {
               </Button>
             </PopoverTrigger>
             <PopoverContent align="start" className="w-36 p-1 md:hidden">
-             <NavLink className="flex justify-center items-center">Get Started</NavLink>
+             <NavLink className="flex justify-center items-center " to="/signup">Get Started</NavLink>
             </PopoverContent>
           </Popover>
       <NavigationMenu>
@@ -73,7 +73,7 @@ const Navbar = () => {
           ))}
         </NavigationMenuList>
       </NavigationMenu>
-      <Button className="hidden md:flex h-5">Get Started</Button>
+      <NavLink className="hidden md:flex h-5" to="/signup" >Get Started</NavLink>
     </section>
   );
 };

@@ -9,7 +9,6 @@ export const useAuthStore = create((set) => ({
   error: null,
   message: null,
   verificationToken: null,
-  
 
   setUser: (user) => set({ user }),
   setToken: (token) => {
@@ -29,9 +28,9 @@ export const useAuthStore = create((set) => ({
         email,
         password,
       });
-      console.log("from zustand",res.data);
+      console.log("from zustand", res.data);
       set({
-        message:res.data.message || "Verification email sent",
+        message: res.data.message || "Verification email sent",
         token: res.data.user.token,
         user: res.data.user,
         loading: false,
@@ -40,35 +39,44 @@ export const useAuthStore = create((set) => ({
       localStorage.setItem("token", res.data.user.token);
       return true;
     } catch (err) {
-   if (err.response?.data?.errors) {
-  const fieldErrors = {};
+      if (err.response?.data?.errors) {
+        const fieldErrors = {};
 
-  err.response.data.errors.forEach(e => {
-    if (!fieldErrors[e.path]) {
-      fieldErrors[e.path] = [];
+        err.response.data.errors.forEach((e) => {
+          if (!fieldErrors[e.path]) {
+            fieldErrors[e.path] = [];
+          }
+          fieldErrors[e.path].push(e.message);
+        });
+
+        set({ error: fieldErrors, loading: false });
+      } else {
+        set({
+          error: {
+            message:
+              err.response?.data?.message ||
+              err.response?.data?.error ||
+              err.message ||
+              "Something went wrong",
+          },
+          loading: false,
+        });
+      }
+      return false;
     }
-    fieldErrors[e.path].push(e.message);
-  });
+  },
 
-  set({ error: fieldErrors, loading: false });
-} else {
-  set({
-    error: { message: err.response?.data?.message|| err.response?.data?.error || err.message || "Something went wrong" },
-    loading: false,
-  });
-}
-return false;
-  }
-},
-
-  verifyEmail: async ({verificationToken }) => {
+  verifyEmail: async ({ verificationToken }) => {
     set({ loading: true, error: null });
     try {
-      const res = await axiosInstance.get(`${API_PATHS.AUTH.VERIFY_EMAIL}?token=${verificationToken}`, {
-        verificationToken,
-      });
+      const res = await axiosInstance.get(
+        `${API_PATHS.AUTH.VERIFY_EMAIL}?token=${verificationToken}`,
+        {
+          verificationToken,
+        }
+      );
       console.log(res.data);
-      set({  
+      set({
         message: res.data.message || "Email verified successfully",
         verificationToken: res.data.user.verificationToken,
         token: res.data.token,
@@ -76,15 +84,17 @@ return false;
         loading: false,
         error: null,
       });
-      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("token", res.data.user.token);
       return true;
     } catch (error) {
       set({
-        error:
-          error.response?.data.error ||
-          error.response?.data.message ||
-          error.message ||
-          "Something went wrong",
+        error: {
+          message:
+            error.response?.data.error ||
+            error.response?.data.message ||
+            error.message ||
+            "Something went wrong",
+        },
         loading: false,
       });
     }
@@ -101,7 +111,7 @@ return false;
         loading: false,
         error: null,
       });
-      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("token", res.data.user.token);
     } catch (error) {
       set({
         error:
@@ -123,21 +133,30 @@ return false;
         password,
       });
       set({
-        token: res.data.token,
+        token: res.data.user.token,
         user: res.data.user,
         loading: false,
         error: null,
       });
-      localStorage.setItem("token", res.data.token);
-    } catch (error) {
-      set({
-        error:
-          error.response?.data.error ||
-          error.response?.data.message ||
-          error.message ||
-          "Something went wrong",
-        loading: false,
-      });
+      localStorage.setItem("token", res.data.user.token);
+      return true;
+    } catch (err) {
+      if (err.response?.data?.errors) {
+
+        set({ error: {message:"Invalid password or email."}, loading: false });
+      } else {
+        set({
+          error: {
+            message:
+              err.response?.data?.message ||
+              err.response?.data?.error ||
+              err.message ||
+              "Something went wrong",
+          },
+          loading: false,
+        });
+      }
+      return false;
     }
   },
 }));

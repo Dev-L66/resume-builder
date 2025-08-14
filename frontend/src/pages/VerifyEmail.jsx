@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useAuthStore } from "../store/useAuthStore";
-import { useSearchParams } from "react-router";
+import { NavLink, useSearchParams } from "react-router";
 import Loader from "../components/ui/Loader";
 import { Button } from "../components/ui/button";
 
@@ -24,23 +24,23 @@ const VerifyEmail = () => {
       </div>
     );
   }
-  // if(error){
-  //     return <div className="flex justify-center items-center h-screen border-2 p-5  rounded-xl"><p>{error}</p></div>
-  // }
+  //   if(error){
+  //       return <div className="flex justify-center items-center h-screen border-2 p-5  rounded-xl"><p>{error}</p></div>
+  //   }
   return (
     <div className="flex justify-center items-center h-screen">
       <div className=" border-2 p-5 rounded-xl">
         {error && (
           <div className="flex flex-col justify-center items-center p-5">
             <p className="text-2xl flex justify-center items-center text-red-500 p-5">
-              {error}
+              {error.message}
             </p>
           </div>
         )}
         {error && !user?.isVerified && (
-          <Button className="flex justify-center items-center bg-zinc-300">
-            Resend Email
-          </Button>
+          <div className="flex flex-col justify-center items-center p-5">
+            <Button className=" bg-zinc-300">Resend Email</Button>
+          </div>
         )}
         {!error && message && user?.isVerified && (
           <>
@@ -50,9 +50,12 @@ const VerifyEmail = () => {
           </>
         )}
         {user?.isVerified && (
-          <Button className="flex justify-center items-center bg-zinc-300">
-            Go to Dashboard
-          </Button>
+          <div className="flex flex-col justify-center items-center ">
+            <p className="text-2xl  text-green-500 p-5">
+              Your email has been verified successfully.
+            </p>
+            <NavLink className="" to="/dashboard">Go to Dashboard</NavLink>
+          </div>
         )}
       </div>
     </div>
